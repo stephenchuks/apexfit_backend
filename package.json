@@ -24,16 +24,22 @@
   "homepage": "https://github.com/stephenchuks/apexfit_backend#readme",
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
     "http-errors": "^2.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.15.0",
     "redis": "^5.1.0",
+    "xss-clean": "^0.1.4",
     "zod": "^3.25.28"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.18",
     "@types/debug": "^4.1.12",
     "@types/express": "^5.0.2",
     "@types/jest": "^29.5.14",

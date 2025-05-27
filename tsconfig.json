@@ -13,6 +13,6 @@
     "outDir": "dist",
     "types": ["node"]
   },
-  "include": ["src", "src/tests"],
+  "include": ["src", "src/tests", "src/types"],
   "exclude": ["node_modules", "dist"]
 }
