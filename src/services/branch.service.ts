@@ -1,14 +1,24 @@
+// src/services/branch.service.ts
 import createHttpError from 'http-errors';
+import type { MongoError } from 'mongodb';
 import { BranchRepo } from '../repositories/branch.repository.js';
-import { BranchCreateInput, BranchUpdateInput } from '../schemas/branch.schema.js';
+import type { BranchCreateInput, BranchUpdateInput } from '../schemas/branch.schema.js';
 
 export class BranchService {
   static async createBranch(input: BranchCreateInput) {
-    return BranchRepo.create(input);
+    try {
+      return await BranchRepo.create(input);
+    } catch (err: any) {
+      if ((err as MongoError).code === 11000) {
+        const dupKey = Object.keys((err as any).keyValue)[0];
+        throw new createHttpError.Conflict(`Branch with this ${dupKey} already exists`);
+      }
+      throw err;
+    }
   }
 
-  static async listBranches() {
-    return BranchRepo.findAll();
+  static async listBranches(page = 1, limit = 20) {
+    return BranchRepo.findAll(page, limit);
   }
 
   static async getBranchById(id: string) {
@@ -20,11 +30,19 @@ export class BranchService {
   }
 
   static async updateBranch(id: string, input: BranchUpdateInput) {
-    const updated = await BranchRepo.update(id, input);
-    if (!updated) {
-      throw new createHttpError.NotFound(`Branch with id ${id} not found`);
+    try {
+      const updated = await BranchRepo.update(id, input);
+      if (!updated) {
+        throw new createHttpError.NotFound(`Branch with id ${id} not found`);
+      }
+      return updated;
+    } catch (err: any) {
+      if ((err as MongoError).code === 11000) {
+        const dupKey = Object.keys((err as any).keyValue)[0];
+        throw new createHttpError.Conflict(`Branch with this ${dupKey} already exists`);
+      }
+      throw err;
     }
-    return updated;
   }
 
   static async deleteBranch(id: string) {

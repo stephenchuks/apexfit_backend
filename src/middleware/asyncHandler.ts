@@ -1,13 +1,13 @@
 // src/middleware/asyncHandler.ts
-import { Request, Response, NextFunction, RequestHandler } from 'express';
+import type { RequestHandler } from 'express';
+export type AsyncRequestHandler = (
+  req: Parameters<RequestHandler>[0],
+  res: Parameters<RequestHandler>[1],
+  next: Parameters<RequestHandler>[2]
+) => Promise<void>;
 
-/**
- * Wraps an async controller so errors are caught and passed to next().
- */
-export const asyncHandler = (fn: RequestHandler) => (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
+export const asyncHandler = (fn: AsyncRequestHandler): RequestHandler => {
+  return (req, res, next) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
 };

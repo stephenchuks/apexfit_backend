@@ -1,5 +1,6 @@
+
 import { BranchModel, BranchDoc } from '../models/branch.model.js';
-import { BranchCreateInput, BranchUpdateInput } from '../schemas/branch.schema.js';
+import type { BranchCreateInput, BranchUpdateInput } from '../schemas/branch.schema.js';
 
 export const BranchRepo = {
   async create(data: BranchCreateInput): Promise<BranchDoc> {
@@ -7,8 +8,17 @@ export const BranchRepo = {
     return branch.save();
   },
 
-  async findAll(): Promise<BranchDoc[]> {
-    return BranchModel.find().sort({ createdAt: -1 }).exec();
+  async findAll(page = 1, limit = 20): Promise<{ docs: BranchDoc[]; total: number }> {
+    const skip = (page - 1) * limit;
+    const [docs, total] = await Promise.all([
+      BranchModel.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec(),
+      BranchModel.countDocuments().exec(),
+    ]);
+    return { docs, total };
   },
 
   async findById(id: string): Promise<BranchDoc | null> {
